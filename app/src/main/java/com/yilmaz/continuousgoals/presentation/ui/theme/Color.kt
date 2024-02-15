@@ -1,4 +1,4 @@
-package com.yilmaz.continuousgoals.ui.theme
+package com.yilmaz.continuousgoals.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
