@@ -3,7 +3,6 @@ package com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -19,9 +18,7 @@ fun GoalsList(
     navController: NavController
 ) {
     LazyVerticalStaggeredGrid(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 140.dp),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         columns = StaggeredGridCells.Fixed(2),
         verticalItemSpacing = 4.dp,

@@ -1,9 +1,13 @@
 package com.yilmaz.continuousgoals.presentation.secreens.goals_screen
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.*
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -47,18 +51,15 @@ import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.InsertGoalBottomSheet
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.SearchedGoalsList
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.navigationItems
-import com.yilmaz.continuousgoals.presentation.secreens.view_model.GoalViewModel
-import com.yilmaz.continuousgoals.presentation.secreens.view_model.SearchGoalViewModel
+import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.view_model.GoalViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun GoalsScreen(
     navController: NavController,
-    goalViewModel: GoalViewModel = hiltViewModel(),
-    searchGoalViewModel: SearchGoalViewModel = hiltViewModel()
+    goalViewModel: GoalViewModel = hiltViewModel()
 ) {
     var query by remember {
         mutableStateOf("")
@@ -85,7 +86,7 @@ fun GoalsScreen(
     val navigationItems = navigationItems()
 
     val goalListState = goalViewModel.state.value
-    val searchedGoalListState = searchGoalViewModel.searchState.value
+    val searchedGoalListState = goalViewModel.searchState.value
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -143,16 +144,20 @@ fun GoalsScreen(
         }
     ) {
         Scaffold(
+            modifier = Modifier.fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = hostState)
             },
             topBar = {
                 SearchBar(
+                    tonalElevation = 8.dp,
+                    shadowElevation = 8.dp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .animateContentSize()
-                        .padding(searchBarPadding, 0.dp),
+                        .padding(horizontal = searchBarPadding)
+                        .padding(bottom = 8.dp),
                     placeholder = {
                         Text(text = "Search")
                     },
@@ -165,19 +170,19 @@ fun GoalsScreen(
                     },
                     onQueryChange = {
                         query = it
-                        searchGoalViewModel.searchGoal(query = "%$query%")
+                        goalViewModel.searchGoal(query = "%$query%")
                     },
                     onSearch = {
                         query = it
-                        searchGoalViewModel.searchGoal(query = "%$query%")
+                        goalViewModel.searchGoal(query = "%$query%")
                     },
                     leadingIcon = {
                         if (active)
                             IconButton(onClick = {
                                 systemUiController.setSystemBarsColor(surfaceColor)
+                                searchedGoalListState.searchedGoals = emptyList()
                                 active = false
                                 query = ""
-                                searchGoalViewModel.searchGoal(query = "%$query%")
                             }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -216,7 +221,6 @@ fun GoalsScreen(
                 ) {
                     SearchedGoalsList(searchedGoalListState, navController)
                 }
-                GoalsList(goalListState, navController)
             },
             floatingActionButton = {
                 FloatingActionButton(
@@ -228,13 +232,17 @@ fun GoalsScreen(
                     )
                 }
             },
-        ) {
-            if (showBottomSheet)
-                InsertGoalBottomSheet(
-                    onDismiss = {
-                        showBottomSheet = false
-                    }
-                )
-        }
+            content = { padding ->
+                if (showBottomSheet)
+                    InsertGoalBottomSheet(onDismiss = { showBottomSheet = false })
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                ) {
+                    GoalsList(goalListState, navController)
+                }
+            }
+        )
     }
 }

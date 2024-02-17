@@ -21,7 +21,7 @@ interface GoalDao {
     @Delete
     suspend fun deleteGoal(model: Goal)
 
-    @Query("SELECT * FROM goal_table ORDER BY id DESC")
+    @Query("SELECT * FROM goal_table ORDER BY goal_id DESC")
     fun getAllGoals(): Flow<List<Goal>>
 
     @Query("SELECT * FROM goal_table WHERE goal_title LIKE :query OR goal_description LIKE:query")

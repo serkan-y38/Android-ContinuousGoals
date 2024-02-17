@@ -1,11 +1,13 @@
-package com.yilmaz.continuousgoals.presentation.secreens.view_model
+package com.yilmaz.continuousgoals.presentation.secreens.goals_screen.view_model
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.continuousgoals.domain.model.Goal
-import com.yilmaz.continuousgoals.domain.use_cases.GoalUseCases
+import com.yilmaz.continuousgoals.domain.use_cases.goal.GetAllGoalsUseCase
+import com.yilmaz.continuousgoals.domain.use_cases.goal.InsertGoalUseCase
+import com.yilmaz.continuousgoals.domain.use_cases.goal.SearchGoalUseCase
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.GoalState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,11 +20,16 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class GoalViewModel @Inject constructor(
-    private val goalUseCases: GoalUseCases
+    private val getAllGoalsUseCase: GetAllGoalsUseCase,
+    private val searchGoalUseCase: SearchGoalUseCase,
+    private val insertGoalUseCase: InsertGoalUseCase
 ) : ViewModel() {
 
     private val _state = mutableStateOf(GoalState())
     val state: State<GoalState> = _state
+
+    private val _searchState = mutableStateOf(GoalState())
+    val searchState: State<GoalState> = _searchState
 
     init {
         getGoals()
@@ -30,7 +37,7 @@ class GoalViewModel @Inject constructor(
 
     @ExperimentalCoroutinesApi
     private fun getGoals() {
-        goalUseCases.getAllGoalsUseCase.invoke()
+        getAllGoalsUseCase.invoke()
             .onEach { goals ->
                 _state.value = state.value.copy(
                     goals = goals,
@@ -38,21 +45,19 @@ class GoalViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    fun deleteGoal(model: Goal) {
-        viewModelScope.launch {
-            goalUseCases.deleteGoalUseCase(model)
-        }
-    }
-
-    fun updateGoal(model: Goal) {
-        viewModelScope.launch {
-            goalUseCases.updateGoalUseCase(model)
-        }
+    @ExperimentalCoroutinesApi
+    fun searchGoal(query: String) {
+        searchGoalUseCase.invoke(query)
+            .onEach { searchedGoals ->
+                _searchState.value = searchState.value.copy(
+                    searchedGoals = searchedGoals,
+                )
+            }.launchIn(viewModelScope)
     }
 
     fun insertGoal(model: Goal) {
         viewModelScope.launch {
-            goalUseCases.insertGoalUseCase(model)
+            insertGoalUseCase.invoke(model)
         }
     }
 

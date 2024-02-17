@@ -40,7 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yilmaz.continuousgoals.domain.model.Goal
-import com.yilmaz.continuousgoals.presentation.secreens.view_model.GoalViewModel
+import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.view_model.GoalViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,6 +55,31 @@ fun InsertGoalBottomSheet(
 ) {
     val state = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+
+    val titleText = remember {
+        mutableStateOf("")
+    }
+    val descriptionText = remember {
+        mutableStateOf("")
+    }
+    val startDate = remember {
+        mutableLongStateOf(0)
+    }
+    var showStartDatePicker by remember {
+        mutableStateOf(false)
+    }
+    val endDate = remember {
+        mutableLongStateOf(0)
+    }
+    var showEndDatePicker by remember {
+        mutableStateOf(false)
+    }
+    val endDateClickableEnabled = remember {
+        mutableStateOf(false)
+    }
+    var titleTextErrorState by remember {
+        mutableStateOf(false)
+    }
 
     fun convertMillisToDate(millis: Long): String = SimpleDateFormat(
         "dd/MM/yyyy",
@@ -79,31 +104,6 @@ fun InsertGoalBottomSheet(
                 .padding(10.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            val titleText = remember {
-                mutableStateOf("")
-            }
-            val descriptionText = remember {
-                mutableStateOf("")
-            }
-            val startDate = remember {
-                mutableLongStateOf(0)
-            }
-            var showStartDatePicker by remember {
-                mutableStateOf(false)
-            }
-            val endDate = remember {
-                mutableLongStateOf(0)
-            }
-            var showEndDatePicker by remember {
-                mutableStateOf(false)
-            }
-            val endDateClickableEnabled = remember {
-                mutableStateOf(false)
-            }
-            var titleTextErrorState by remember {
-                mutableStateOf(false)
-            }
-
             TextField(
                 singleLine = true,
                 value = titleText.value,
@@ -222,6 +222,7 @@ fun InsertGoalBottomSheet(
                     .padding(top = 15.dp),
                 onClick = {
                     titleTextErrorState = titleText.value.isEmpty()
+
                     if (titleTextErrorState)
                     // After 5 second, error will be gone
                         Handler(Looper.getMainLooper()).postDelayed(
@@ -232,11 +233,12 @@ fun InsertGoalBottomSheet(
                     if (!titleTextErrorState && startDate.longValue != 0.toLong() && endDate.longValue != 0.toLong()) {
                         goalViewModel.insertGoal(
                             Goal(
-                                null,
-                                titleText.value,
-                                descriptionText.value,
-                                convertMillisToDate(startDate.longValue),
-                                convertMillisToDate(endDate.longValue)
+                                goalId = null,
+                                goalTitle = titleText.value,
+                                goalDescription = descriptionText.value,
+                                startDate = convertMillisToDate(startDate.longValue),
+                                endDate = convertMillisToDate(endDate.longValue),
+                                isGoalItemsCreated = false
                             )
                         )
                         scope.launch { state.hide() }.invokeOnCompletion {
@@ -250,6 +252,5 @@ fun InsertGoalBottomSheet(
                 )
             }
         }
-
     }
 }

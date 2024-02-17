@@ -1,4 +1,4 @@
-package com.yilmaz.continuousgoals.domain.use_cases
+package com.yilmaz.continuousgoals.domain.use_cases.goal
 
 import com.yilmaz.continuousgoals.domain.model.Goal
 import com.yilmaz.continuousgoals.domain.repository.GoalRepository

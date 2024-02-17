@@ -4,15 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import com.yilmaz.continuousgoals.common.Constants
 import com.yilmaz.continuousgoals.data.local.dao.GoalDao
+import com.yilmaz.continuousgoals.data.local.dao.GoalItemDao
 import com.yilmaz.continuousgoals.data.local.db.GoalDatabase
+import com.yilmaz.continuousgoals.data.repository.GoalItemRepositoryImpl
 import com.yilmaz.continuousgoals.data.repository.GoalRepositoryImpl
+import com.yilmaz.continuousgoals.domain.repository.GoalItemRepository
 import com.yilmaz.continuousgoals.domain.repository.GoalRepository
-import com.yilmaz.continuousgoals.domain.use_cases.DeleteGoalUseCase
-import com.yilmaz.continuousgoals.domain.use_cases.GetAllGoalsUseCase
-import com.yilmaz.continuousgoals.domain.use_cases.GoalUseCases
-import com.yilmaz.continuousgoals.domain.use_cases.InsertGoalUseCase
-import com.yilmaz.continuousgoals.domain.use_cases.SearchGoalUseCase
-import com.yilmaz.continuousgoals.domain.use_cases.UpdateGoalUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,11 +41,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGoalUseCases(repository: GoalRepository) = GoalUseCases(
-        getAllGoalsUseCase = GetAllGoalsUseCase(repository),
-        deleteGoalUseCase = DeleteGoalUseCase(repository),
-        updateGoalUseCase = UpdateGoalUseCase(repository),
-        insertGoalUseCase = InsertGoalUseCase(repository),
-    )
+    fun provideGoalItemDao(db: GoalDatabase): GoalItemDao = db.goalItemDao()
+
+    @Provides
+    @Singleton
+    fun provideGoalItemRepository(dao: GoalItemDao): GoalItemRepository = GoalItemRepositoryImpl(dao)
 
 }
