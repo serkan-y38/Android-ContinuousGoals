@@ -18,5 +18,5 @@ data class Goal(
     @ColumnInfo(name = "start_date") val startDate: String,
     @ColumnInfo(name = "end_date") val endDate: String,
     @ColumnInfo(name = "color") val color: Long = Constants.colors.shuffled().random(),
-    @ColumnInfo(name = "is_goal_items_created") val isGoalItemsCreated: Boolean,
+    @ColumnInfo(name = "is_goal_items_created") var isGoalItemsCreated: Boolean,
 ) : Parcelable

@@ -21,6 +21,9 @@ interface GoalItemDao {
     @Query("SELECT * FROM goal_item_table WHERE goal_id=:goalId ORDER BY goal_item_id ASC")
     fun getGoalItems(goalId: Int): Flow<List<GoalItem>>
 
+    @Query("SELECT * FROM goal_item_table WHERE goal_id=:goalId AND is_initial_state = 1 ORDER BY goal_item_id ASC LIMIT 1")
+    fun getInitialStateGoalItem(goalId: Int): Flow<List<GoalItem>>
+
     @Transaction
     suspend fun insertGoalItems(itemsSize: Int, goalId: Int) {
         for (i in 0..itemsSize)

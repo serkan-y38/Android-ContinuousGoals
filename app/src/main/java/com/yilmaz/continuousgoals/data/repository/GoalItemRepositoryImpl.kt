@@ -18,6 +18,10 @@ class GoalItemRepositoryImpl @Inject constructor(
         return dao.getGoalItems(goalId)
     }
 
+    override fun getInitialStateGoalItem(goalId: Int): Flow<List<GoalItem>> {
+        return dao.getInitialStateGoalItem(goalId)
+    }
+
     override suspend fun insertGoalItems(itemsSize: Int, goalId: Int) {
         dao.insertGoalItems(itemsSize, goalId)
     }

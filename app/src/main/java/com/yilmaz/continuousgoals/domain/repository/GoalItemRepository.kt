@@ -9,5 +9,7 @@ interface GoalItemRepository {
 
     fun getGoalItems(goalId: Int): Flow<List<GoalItem>>
 
+    fun getInitialStateGoalItem(goalId: Int): Flow<List<GoalItem>>
+
     suspend fun insertGoalItems(itemsSize: Int, goalId: Int)
 }
