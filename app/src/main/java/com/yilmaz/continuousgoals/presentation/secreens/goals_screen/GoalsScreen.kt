@@ -49,7 +49,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.yilmaz.continuousgoals.R
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.GoalsList
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.InsertGoalBottomSheet
-import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.SearchedGoalsList
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.navigationItems
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.view_model.GoalViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -85,8 +84,14 @@ fun GoalsScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val navigationItems = navigationItems()
 
-    val goalListState = goalViewModel.state.value
-    val searchedGoalListState = goalViewModel.searchState.value
+    val state = goalViewModel.state.value
+
+    fun search() {
+        if (query != "")
+            goalViewModel.searchGoal(query = "%$query%")
+        else
+            state.searchedGoals = emptyList()
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -170,17 +175,17 @@ fun GoalsScreen(
                     },
                     onQueryChange = {
                         query = it
-                        goalViewModel.searchGoal(query = "%$query%")
+                        search()
                     },
                     onSearch = {
                         query = it
-                        goalViewModel.searchGoal(query = "%$query%")
+                        search()
                     },
                     leadingIcon = {
                         if (active)
                             IconButton(onClick = {
                                 systemUiController.setSystemBarsColor(surfaceColor)
-                                searchedGoalListState.searchedGoals = emptyList()
+                                state.searchedGoals = emptyList()
                                 active = false
                                 query = ""
                             }) {
@@ -219,7 +224,7 @@ fun GoalsScreen(
                     query = query,
                     active = active,
                 ) {
-                    SearchedGoalsList(searchedGoalListState, navController)
+                    GoalsList(state.searchedGoals, navController)
                 }
             },
             floatingActionButton = {
@@ -247,7 +252,7 @@ fun GoalsScreen(
                         .fillMaxSize()
                         .padding(padding)
                 ) {
-                    GoalsList(goalListState, navController)
+                    GoalsList(state.goals, navController)
                 }
             }
         )

@@ -10,11 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.GoalState
+import com.yilmaz.continuousgoals.domain.model.Goal
 
 @Composable
 fun GoalsList(
-    state: GoalState,
+    goals: List<Goal>,
     navController: NavController
 ) {
     LazyVerticalStaggeredGrid(
@@ -24,7 +24,7 @@ fun GoalsList(
         verticalItemSpacing = 4.dp,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         content = {
-            items(state.goals) { goal ->
+            items(goals) { goal ->
                 GoalListItem(
                     it = goal,
                     navController = navController

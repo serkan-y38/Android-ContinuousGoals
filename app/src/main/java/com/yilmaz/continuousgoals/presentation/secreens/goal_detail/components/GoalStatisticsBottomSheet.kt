@@ -85,8 +85,8 @@ fun GoalStatisticsBottomSheet(
                             description.isEnabled = false
                             isDrawHoleEnabled = false
                             legend.isEnabled = true
-                            legend.textSize = 8F
-                            legend.textColor = Color.WHITE
+                            legend.textSize = 12F
+                            legend.textColor = legendAndLabelColor
                             legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
                         }
                     },

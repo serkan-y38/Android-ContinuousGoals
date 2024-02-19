@@ -9,20 +9,18 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.GoalItemState
+import com.yilmaz.continuousgoals.domain.model.GoalItem
 
 @Composable
-fun GoalItemsList(state: GoalItemState) {
+fun GoalItemsList(goalItems: List<GoalItem>) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         columns = StaggeredGridCells.Fixed(6),
-        verticalItemSpacing = 8.dp,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalItemSpacing = 16.dp,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         content = {
-            items(state.goalItems) { goalItem ->
-                GoalItemsListItem(it = goalItem)
-            }
+            items(goalItems) { goalItem -> GoalItemsListItem(it = goalItem) }
         }
     )
 }

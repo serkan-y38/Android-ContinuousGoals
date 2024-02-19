@@ -54,6 +54,16 @@ fun GoalDetailScreen(
     goal: Goal,
     goalItemViewModel: GoalItemViewModel = hiltViewModel()
 ) {
+    val state = goalItemViewModel.state.value
+
+    fun countAchievedGoals(): Int =
+        state.goalItems.filter { goalItem -> !goalItem.isInitialState && goalItem.isDone }.size
+
+    fun countFailedGoals(): Int =
+        state.goalItems.filter { goalItem -> !goalItem.isInitialState && !goalItem.isDone }.size
+
+    fun countInitialStateGoals(): Int =
+        state.goalItems.filter { goalItem -> goalItem.isInitialState }.size
 
     fun getDifferenceInDays(dateStr1: String, dateStr2: String): Long {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
@@ -65,30 +75,15 @@ fun GoalDetailScreen(
     LaunchedEffect(key1 = goal) {
         if (!goal.isGoalItemsCreated) {
             goalItemViewModel.insertGoalItems(
-                getDifferenceInDays(goal.endDate, goal.startDate).toInt(),
-                goal.goalId!!
+                itemsSize = getDifferenceInDays(goal.endDate, goal.startDate).toInt(),
+                goalId = goal.goalId!!
             )
             goal.isGoalItemsCreated = true
-            goalItemViewModel.updateGoal(
-                model = goal
-            )
+            goalItemViewModel.updateGoal(model = goal)
         }
+        goalItemViewModel.getGoalItems(goal.goalId!!)
+        goalItemViewModel.getInitialStateGoalItem(goal.goalId)
     }
-
-    goalItemViewModel.getInitialStateGoalItem(goal.goalId!!)
-    val initialGoalItemState = goalItemViewModel.initialGoalItemState.value
-
-    goalItemViewModel.getGoalItems(goal.goalId)
-    val goalItemsState = goalItemViewModel.state.value
-
-    fun countAchievedGoals(): Int =
-        goalItemsState.goalItems.filter { goalItem -> !goalItem.isInitialState && goalItem.isDone }.size
-
-    fun countFailedGoals(): Int =
-        goalItemsState.goalItems.filter { goalItem -> !goalItem.isInitialState && !goalItem.isDone }.size
-
-    fun countInitialStateGoals(): Int =
-        goalItemsState.goalItems.filter { goalItem -> goalItem.isInitialState }.size
 
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -113,12 +108,12 @@ fun GoalDetailScreen(
     }
 
     fun updateGoalItem(isAchieved: Boolean) {
-        if (initialGoalItemState.initialStateGoalItem.isNotEmpty()) {
-            val model = initialGoalItemState.initialStateGoalItem.first()
+        if (state.initialStateGoalItem.isNotEmpty()) {
+            val model = state.initialStateGoalItem.first()
             model.isDone = isAchieved
             model.isInitialState = false
             goalItemViewModel.updateGoalItem(model)
-            initialGoalItemState.initialStateGoalItem = emptyList()
+            state.initialStateGoalItem = emptyList()
         } else {
             scope.launch {
                 hostState.showSnackbar(
@@ -268,7 +263,7 @@ fun GoalDetailScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                GoalItemsList(state = goalItemsState)
+                GoalItemsList(goalItems = state.goalItems)
             }
         },
     )

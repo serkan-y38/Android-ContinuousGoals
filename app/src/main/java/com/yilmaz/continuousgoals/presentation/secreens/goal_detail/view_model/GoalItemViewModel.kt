@@ -33,15 +33,8 @@ class GoalItemViewModel @Inject constructor(
     private val _state = mutableStateOf(GoalItemState())
     val state: State<GoalItemState> = _state
 
-    private val _initialGoalItemState = mutableStateOf(GoalItemState())
-    val initialGoalItemState: State<GoalItemState> = _initialGoalItemState
-
     @ExperimentalCoroutinesApi
     fun getGoalItems(goalId: Int) {
-        getItems(goalId)
-    }
-
-    private fun getItems(goalId: Int) {
         getGoalItemsUseCase.invoke(goalId)
             .onEach { items ->
                 _state.value = state.value.copy(
@@ -54,7 +47,7 @@ class GoalItemViewModel @Inject constructor(
     fun getInitialStateGoalItem(goalId: Int) {
         getInitialStateGoalItemUseCase.invoke(goalId)
             .onEach { item ->
-                _initialGoalItemState.value = initialGoalItemState.value.copy(
+                _state.value = state.value.copy(
                     initialStateGoalItem = item,
                 )
             }.launchIn(viewModelScope)

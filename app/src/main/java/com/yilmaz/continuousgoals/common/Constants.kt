@@ -28,7 +28,7 @@ object Constants {
     val colorsForPieChart = listOf(
         Color.parseColor("#9CCC65"),
         Color.parseColor("#EF5350"),
-        Color.parseColor("#FDD835")
+        Color.parseColor("#29B6F6")
     )
 
 }

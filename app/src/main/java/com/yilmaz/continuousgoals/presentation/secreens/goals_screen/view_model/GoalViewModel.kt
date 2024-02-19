@@ -28,9 +28,6 @@ class GoalViewModel @Inject constructor(
     private val _state = mutableStateOf(GoalState())
     val state: State<GoalState> = _state
 
-    private val _searchState = mutableStateOf(GoalState())
-    val searchState: State<GoalState> = _searchState
-
     init {
         getGoals()
     }
@@ -49,7 +46,7 @@ class GoalViewModel @Inject constructor(
     fun searchGoal(query: String) {
         searchGoalUseCase.invoke(query)
             .onEach { searchedGoals ->
-                _searchState.value = searchState.value.copy(
+                _state.value = state.value.copy(
                     searchedGoals = searchedGoals,
                 )
             }.launchIn(viewModelScope)
