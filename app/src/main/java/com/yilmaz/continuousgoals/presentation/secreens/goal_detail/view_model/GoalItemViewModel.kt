@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.continuousgoals.domain.model.Goal
 import com.yilmaz.continuousgoals.domain.model.GoalItem
+import com.yilmaz.continuousgoals.domain.use_cases.goal.DeleteGoalUseCase
 import com.yilmaz.continuousgoals.domain.use_cases.goal.UpdateGoalUseCase
 import com.yilmaz.continuousgoals.domain.use_cases.goal_item.GetGoalItemsUseCase
 import com.yilmaz.continuousgoals.domain.use_cases.goal_item.GetInitialStateGoalItemUseCase
@@ -25,7 +26,8 @@ class GoalItemViewModel @Inject constructor(
     private val updateGoalItemUseCase: UpdateGoalItemUseCase,
     private val updateGoalUseCase: UpdateGoalUseCase,
     private val insertGoalItemsUseCase: InsertGoalItemsUseCase,
-    private val getInitialStateGoalItemUseCase: GetInitialStateGoalItemUseCase
+    private val getInitialStateGoalItemUseCase: GetInitialStateGoalItemUseCase,
+    private val deleteGoalUseCase: DeleteGoalUseCase
 ) : ViewModel() {
 
     private val _state = mutableStateOf(GoalItemState())
@@ -73,6 +75,12 @@ class GoalItemViewModel @Inject constructor(
     fun updateGoal(model: Goal) {
         viewModelScope.launch {
             updateGoalUseCase.invoke(model)
+        }
+    }
+
+    fun deleteGoal(model: Goal) {
+        viewModelScope.launch {
+            deleteGoalUseCase.invoke(model)
         }
     }
 

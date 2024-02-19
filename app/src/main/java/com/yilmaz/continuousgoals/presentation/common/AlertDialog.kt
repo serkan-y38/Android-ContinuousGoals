@@ -1,21 +1,27 @@
-package com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components
+package com.yilmaz.continuousgoals.presentation.common
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.DialogProperties
 
 @Composable
-fun UpdateGoalItemDialog(
+fun MyAlertDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
+    title: String,
+    text: String,
+    confirmButtonText: String,
+    dismissButtonText: String,
+    cancelable: Boolean
 ) {
     AlertDialog(
         title = {
-            Text(text = "Update today's goal")
+            Text(text = title)
         },
         text = {
-            Text(text = "Has today's goal been achieved or failed?")
+            Text(text = text)
         },
         onDismissRequest = {
             onDismissRequest()
@@ -26,7 +32,7 @@ fun UpdateGoalItemDialog(
                     onConfirmation()
                 }
             ) {
-                Text("Achieved")
+                Text(confirmButtonText)
             }
         },
         dismissButton = {
@@ -35,8 +41,12 @@ fun UpdateGoalItemDialog(
                     onDismissRequest()
                 }
             ) {
-                Text("Failed")
+                Text(dismissButtonText)
             }
-        }
+        },
+        properties = DialogProperties(
+            dismissOnBackPress = cancelable,
+            dismissOnClickOutside = cancelable,
+        )
     )
 }

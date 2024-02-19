@@ -1,6 +1,5 @@
 package com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components
 
-import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.clickable
@@ -38,20 +37,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.yilmaz.continuousgoals.common.StringHelper
 import com.yilmaz.continuousgoals.domain.model.Goal
-import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.view_model.GoalViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsertGoalBottomSheet(
     onDismiss: () -> Unit,
-    goalViewModel: GoalViewModel = hiltViewModel()
+    onSaveGoal: (Goal) -> Unit
 ) {
     val state = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -86,15 +83,37 @@ fun InsertGoalBottomSheet(
         Locale.US
     ).format(Date(millis))
 
+    fun saveButtonAction() {
+        titleTextErrorState = titleText.value.isEmpty()
+
+        if (titleTextErrorState)
+        // After 5 second, error will be gone
+            Handler(Looper.getMainLooper()).postDelayed(
+                { titleTextErrorState = false },
+                5000
+            )
+
+        if (!titleTextErrorState && startDate.longValue != 0.toLong() && endDate.longValue != 0.toLong()) {
+            onSaveGoal(
+                Goal(
+                    goalId = null,
+                    goalTitle = StringHelper().capitalize(titleText.value),
+                    goalDescription = StringHelper().capitalize(descriptionText.value),
+                    startDate = convertMillisToDate(startDate.longValue),
+                    endDate = convertMillisToDate(endDate.longValue),
+                    isGoalItemsCreated = false
+                )
+            )
+            scope.launch { state.hide() }.invokeOnCompletion {
+                onDismiss()
+            }
+        }
+    }
+
     ModalBottomSheet(
-        modifier = Modifier
-            .fillMaxSize(),
-        dragHandle = {
-            BottomSheetDefaults.DragHandle()
-        },
-        onDismissRequest = {
-            onDismiss()
-        },
+        modifier = Modifier.fillMaxSize(),
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        onDismissRequest = { onDismiss() },
         sheetState = state,
         windowInsets = WindowInsets.ime
     ) {
@@ -107,15 +126,11 @@ fun InsertGoalBottomSheet(
             TextField(
                 singleLine = true,
                 value = titleText.value,
-                onValueChange = { text ->
-                    titleText.value = text
-                },
+                onValueChange = { text -> titleText.value = text },
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                label = {
-                    Text("Title")
-                },
+                label = { Text("Title") },
                 supportingText = {
                     if (titleTextErrorState) {
                         Text(
@@ -139,9 +154,7 @@ fun InsertGoalBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                label = {
-                    Text("Description")
-                }
+                label = { Text("Description") }
             )
             Card(
                 shape = RoundedCornerShape(8.dp),
@@ -187,9 +200,7 @@ fun InsertGoalBottomSheet(
                     .fillMaxWidth()
                     .height(64.dp)
                     .padding(top = 15.dp)
-                    .clickable(endDateClickableEnabled.value) {
-                        showEndDatePicker = true
-                    }
+                    .clickable(endDateClickableEnabled.value) { showEndDatePicker = true }
             ) {
                 Row(
                     modifier = Modifier.fillMaxSize()
@@ -207,10 +218,7 @@ fun InsertGoalBottomSheet(
             }
             if (showEndDatePicker) {
                 MyDatePickerDialog(
-                    onDateSelected = { date ->
-                        if (date != 0.toLong())
-                            endDate.longValue = date
-                    },
+                    onDateSelected = { date -> if (date != 0.toLong()) endDate.longValue = date },
                     onDismiss = { showEndDatePicker = false },
                     minSelectableDate = startDate.longValue + 86400000
                 )
@@ -220,37 +228,9 @@ fun InsertGoalBottomSheet(
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(top = 15.dp),
-                onClick = {
-                    titleTextErrorState = titleText.value.isEmpty()
-
-                    if (titleTextErrorState)
-                    // After 5 second, error will be gone
-                        Handler(Looper.getMainLooper()).postDelayed(
-                            { titleTextErrorState = false },
-                            5000
-                        )
-
-                    if (!titleTextErrorState && startDate.longValue != 0.toLong() && endDate.longValue != 0.toLong()) {
-                        goalViewModel.insertGoal(
-                            Goal(
-                                goalId = null,
-                                goalTitle = titleText.value,
-                                goalDescription = descriptionText.value,
-                                startDate = convertMillisToDate(startDate.longValue),
-                                endDate = convertMillisToDate(endDate.longValue),
-                                isGoalItemsCreated = false
-                            )
-                        )
-                        scope.launch { state.hide() }.invokeOnCompletion {
-                            onDismiss()
-                        }
-                    }
-                }
-            ) {
-                Text(
-                    text = "Save",
-                )
-            }
+                onClick = { saveButtonAction() },
+                content = { Text(text = "Save") }
+            )
         }
     }
 }

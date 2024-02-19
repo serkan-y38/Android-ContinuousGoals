@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -33,10 +35,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.yilmaz.continuousgoals.R
 import com.yilmaz.continuousgoals.domain.model.Goal
+import com.yilmaz.continuousgoals.presentation.common.MyAlertDialog
+import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components.GoalDetailsBottomSheet
 import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components.GoalItemsList
-import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components.UpdateGoalItemDialog
+import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components.GoalStatisticsBottomSheet
 import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.view_model.GoalItemViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -70,19 +75,41 @@ fun GoalDetailScreen(
         }
     }
 
-    goalItemViewModel.getGoalItems(goal.goalId!!)
-    val goalItemsState = goalItemViewModel.state.value
-
-    goalItemViewModel.getInitialStateGoalItem(goal.goalId)
+    goalItemViewModel.getInitialStateGoalItem(goal.goalId!!)
     val initialGoalItemState = goalItemViewModel.initialGoalItemState.value
 
+    goalItemViewModel.getGoalItems(goal.goalId)
+    val goalItemsState = goalItemViewModel.state.value
+
+    fun countAchievedGoals(): Int =
+        goalItemsState.goalItems.filter { goalItem -> !goalItem.isInitialState && goalItem.isDone }.size
+
+    fun countFailedGoals(): Int =
+        goalItemsState.goalItems.filter { goalItem -> !goalItem.isInitialState && !goalItem.isDone }.size
+
+    fun countInitialStateGoals(): Int =
+        goalItemsState.goalItems.filter { goalItem -> goalItem.isInitialState }.size
+
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     val openUpdateGoalItemDialogDialog = remember {
         mutableStateOf(false)
     }
+    val openDeleteGoalDialogDialog = remember {
+        mutableStateOf(false)
+    }
+    val openGoalDetailsBottomSheet = remember {
+        mutableStateOf(false)
+    }
+    val openGoalStatisticsBottomSheet = remember {
+        mutableStateOf(false)
+    }
     val hostState = remember {
         SnackbarHostState()
+    }
+    val topBarTitle = remember {
+        mutableStateOf(goal.goalTitle)
     }
 
     fun updateGoalItem(isAchieved: Boolean) {
@@ -92,6 +119,13 @@ fun GoalDetailScreen(
             model.isInitialState = false
             goalItemViewModel.updateGoalItem(model)
             initialGoalItemState.initialStateGoalItem = emptyList()
+        } else {
+            scope.launch {
+                hostState.showSnackbar(
+                    message = "Goal has been done",
+                    duration = SnackbarDuration.Long
+                )
+            }
         }
     }
 
@@ -110,7 +144,7 @@ fun GoalDetailScreen(
                 title = {
                     Text(
                         modifier = Modifier.padding(horizontal = 10.dp),
-                        text = goal.goalTitle,
+                        text = topBarTitle.value,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -127,24 +161,23 @@ fun GoalDetailScreen(
                 },
                 scrollBehavior = scrollBehavior
             )
-
         },
         bottomBar = {
             BottomAppBar(
                 actions = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = { openGoalDetailsBottomSheet.value = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_text_snippet_24),
                             contentDescription = "Localized description"
                         )
                     }
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = { openDeleteGoalDialogDialog.value = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_delete_24),
                             contentDescription = "Localized description",
                         )
                     }
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = { openGoalStatisticsBottomSheet.value = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_pie_chart_24),
                             contentDescription = "Localized description",
@@ -173,7 +206,7 @@ fun GoalDetailScreen(
         },
         content = { padding ->
             if (openUpdateGoalItemDialogDialog.value)
-                UpdateGoalItemDialog(
+                MyAlertDialog(
                     onDismissRequest = {
                         updateGoalItem(isAchieved = false)
                         openUpdateGoalItemDialogDialog.value = false
@@ -181,8 +214,55 @@ fun GoalDetailScreen(
                     onConfirmation = {
                         updateGoalItem(isAchieved = true)
                         openUpdateGoalItemDialogDialog.value = false
-                    }
+                    },
+                    title = "Update today's goal",
+                    text = "Has today's goal been achieved or failed?",
+                    confirmButtonText = "Achieved",
+                    dismissButtonText = "Failed",
+                    cancelable = false
                 )
+
+            if (openDeleteGoalDialogDialog.value)
+                MyAlertDialog(
+                    onDismissRequest = {
+                        openDeleteGoalDialogDialog.value = false
+                    },
+                    onConfirmation = {
+                        goalItemViewModel.deleteGoal(goal)
+                        openDeleteGoalDialogDialog.value = false
+                        navController.popBackStack()
+                    },
+                    title = "Delete From Goals?",
+                    text = "This item will disappear. This action cannot be undone",
+                    confirmButtonText = "Delete",
+                    dismissButtonText = "Cancel",
+                    cancelable = true
+                )
+
+            if (openGoalDetailsBottomSheet.value)
+                GoalDetailsBottomSheet(
+                    onDismiss = {
+                        openGoalDetailsBottomSheet.value = false
+                    },
+                    onUpdateGoal = { title, description ->
+                        goal.goalTitle = title
+                        goal.goalDescription = description
+                        goalItemViewModel.updateGoal(goal)
+                        openGoalDetailsBottomSheet.value = false
+                    },
+                    goal = goal
+                )
+
+            if (openGoalStatisticsBottomSheet.value)
+                GoalStatisticsBottomSheet(
+                    onDismiss = {
+                        openGoalStatisticsBottomSheet.value = false
+                    },
+                    achieved = countAchievedGoals(),
+                    failed = countFailedGoals(),
+                    initialState = countInitialStateGoals()
+                )
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -192,5 +272,4 @@ fun GoalDetailScreen(
             }
         },
     )
-
 }

@@ -1,5 +1,7 @@
 package com.yilmaz.continuousgoals.common
 
+import android.graphics.Color
+
 object Constants {
 
     const val APP_DB_NAME = "goal_database"
@@ -22,4 +24,11 @@ object Constants {
         0xFFFF9800,
         0xFFFF5722
     )
+
+    val colorsForPieChart = listOf(
+        Color.parseColor("#9CCC65"),
+        Color.parseColor("#EF5350"),
+        Color.parseColor("#FDD835")
+    )
+
 }

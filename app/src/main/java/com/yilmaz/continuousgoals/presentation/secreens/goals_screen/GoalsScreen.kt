@@ -234,7 +234,14 @@ fun GoalsScreen(
             },
             content = { padding ->
                 if (showBottomSheet)
-                    InsertGoalBottomSheet(onDismiss = { showBottomSheet = false })
+                    InsertGoalBottomSheet(
+                        onDismiss = {
+                            showBottomSheet = false
+                        },
+                        onSaveGoal = { goal ->
+                            goalViewModel.insertGoal(goal)
+                        }
+                    )
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
