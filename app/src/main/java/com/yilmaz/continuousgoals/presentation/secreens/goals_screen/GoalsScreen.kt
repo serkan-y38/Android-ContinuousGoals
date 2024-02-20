@@ -1,5 +1,6 @@
 package com.yilmaz.continuousgoals.presentation.secreens.goals_screen
 
+import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Box
@@ -40,9 +41,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -77,6 +80,7 @@ fun GoalsScreen(
         mutableStateOf(false)
     }
 
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val systemUiController = rememberSystemUiController()
     val surfaceColor = MaterialTheme.colorScheme.surface
@@ -92,6 +96,15 @@ fun GoalsScreen(
             goalViewModel.searchGoal(query = "%$query%")
         else
             state.searchedGoals = emptyList()
+    }
+
+    fun share() {
+        Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, "Share app text")
+            type = "text/plain"
+        }.also { intent ->
+            startActivity(context, Intent.createChooser(intent, null), null)
+        }
     }
 
     ModalNavigationDrawer(
@@ -128,14 +141,7 @@ fun GoalsScreen(
                         onClick = {
                             selectedItemIndex = index
                             when (selectedItemIndex) {
-                                0 -> {
-                                    // TODO
-                                }
-
-                                1 -> {
-                                    // TODO
-                                }
-
+                                1 -> share()
                                 2 -> navController.navigate(route = NavigationGraph.SettingsScreen.route)
                             }
                             scope.launch {

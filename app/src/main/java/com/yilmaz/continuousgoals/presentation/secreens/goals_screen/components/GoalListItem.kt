@@ -82,7 +82,7 @@ fun GoalListItem(it: Goal, navController: NavController) {
                     modifier = Modifier.padding(top = 2.dp),
                     text = it.goalDescription,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 5
+                    maxLines = 10
                 )
             }
         }

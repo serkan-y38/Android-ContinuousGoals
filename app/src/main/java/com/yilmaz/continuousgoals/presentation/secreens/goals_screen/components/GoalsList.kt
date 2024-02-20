@@ -24,7 +24,10 @@ fun GoalsList(
         verticalItemSpacing = 4.dp,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         content = {
-            items(goals) { goal ->
+            items(
+                items = goals,
+                key = { it.goalId!! }
+            ) { goal ->
                 GoalListItem(
                     it = goal,
                     navController = navController

@@ -20,7 +20,10 @@ fun GoalItemsList(goalItems: List<GoalItem>) {
         verticalItemSpacing = 16.dp,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         content = {
-            items(goalItems) { goalItem -> GoalItemsListItem(it = goalItem) }
+            items(
+                items = goalItems,
+                key = { it.goalItemId!! }
+            ) { goalItem -> GoalItemsListItem(it = goalItem) }
         }
     )
 }
