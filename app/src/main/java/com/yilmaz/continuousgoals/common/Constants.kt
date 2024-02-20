@@ -31,4 +31,8 @@ object Constants {
         Color.parseColor("#29B6F6")
     )
 
+    const val THEME_PREFERENCES_KEY = "theme"
+    const val DATA_STORE_PREFERENCES_NAME = "settings"
+    val themes = listOf("System setting", "Dark mode", "Light mode")
+
 }

@@ -35,7 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.yilmaz.continuousgoals.R
 import com.yilmaz.continuousgoals.domain.model.Goal
-import com.yilmaz.continuousgoals.presentation.common.MyAlertDialog
+import com.yilmaz.continuousgoals.presentation.secreens.common.MyAlertDialog
 import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components.GoalDetailsBottomSheet
 import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components.GoalItemsList
 import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.components.GoalStatisticsBottomSheet

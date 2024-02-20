@@ -47,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.yilmaz.continuousgoals.R
+import com.yilmaz.continuousgoals.presentation.navigation.NavigationGraph
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.GoalsList
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.InsertGoalBottomSheet
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.components.navigationItems
@@ -135,9 +136,7 @@ fun GoalsScreen(
                                     // TODO
                                 }
 
-                                2 -> {
-                                    // TODO
-                                }
+                                2 -> navController.navigate(route = NavigationGraph.SettingsScreen.route)
                             }
                             scope.launch {
                                 drawerState.close()

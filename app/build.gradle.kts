@@ -71,6 +71,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
+    // Preferences DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // Dagger Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")

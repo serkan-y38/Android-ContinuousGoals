@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.yilmaz.continuousgoals.domain.model.Goal
 import com.yilmaz.continuousgoals.presentation.secreens.goal_detail.GoalDetailScreen
 import com.yilmaz.continuousgoals.presentation.secreens.goals_screen.GoalsScreen
+import com.yilmaz.continuousgoals.presentation.secreens.settings.SettingsScreen
 
 @Composable
 fun SetUpNavigationGraph(navHostController: NavHostController) {
@@ -26,6 +27,11 @@ fun SetUpNavigationGraph(navHostController: NavHostController) {
                 NavigationHelper.GOAL_MODEL_KEY
             )
             goal?.let { it1 -> GoalDetailScreen(navHostController, it1) }
+        }
+        composable(
+            route = NavigationGraph.SettingsScreen.route
+        ) {
+            SettingsScreen(navHostController)
         }
     }
 }
