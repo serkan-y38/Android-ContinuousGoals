@@ -229,7 +229,14 @@ fun GoalsScreen(
                     query = query,
                     active = active,
                 ) {
-                    GoalsList(state.searchedGoals, navController)
+                    GoalsList(
+                        goals = state.searchedGoals,
+                        navController = navController,
+                        ondDelete = { goal ->
+                            goalViewModel.deleteGoal(goal)
+                            state.goals -= goal
+                        }
+                    )
                 }
             },
             floatingActionButton = {
@@ -257,7 +264,14 @@ fun GoalsScreen(
                         .fillMaxSize()
                         .padding(padding)
                 ) {
-                    GoalsList(state.goals, navController)
+                    GoalsList(
+                        goals = state.goals,
+                        navController = navController,
+                        ondDelete = { goal ->
+                            goalViewModel.deleteGoal(goal)
+                            state.goals -= goal
+                        }
+                    )
                 }
             }
         )

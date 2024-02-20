@@ -11,11 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.yilmaz.continuousgoals.domain.model.Goal
+import com.yilmaz.continuousgoals.presentation.secreens.common.SwipeToDelete
 
 @Composable
 fun GoalsList(
     goals: List<Goal>,
-    navController: NavController
+    navController: NavController,
+    ondDelete: (Goal) -> Unit
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
@@ -28,10 +30,18 @@ fun GoalsList(
                 items = goals,
                 key = { it.goalId!! }
             ) { goal ->
-                GoalListItem(
-                    it = goal,
-                    navController = navController
-                )
+                SwipeToDelete(
+                    item = goal,
+                    onDelete = {
+                        ondDelete(goal)
+                    }
+                ) {
+                    GoalListItem(
+                        it = goal,
+                        navController = navController
+                    )
+                }
+
             }
         }
     )
