@@ -41,7 +41,6 @@ fun GoalsList(
                         navController = navController
                     )
                 }
-
             }
         }
     )

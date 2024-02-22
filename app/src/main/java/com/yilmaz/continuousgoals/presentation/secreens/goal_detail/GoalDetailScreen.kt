@@ -82,7 +82,6 @@ fun GoalDetailScreen(
             goalItemViewModel.updateGoal(model = goal)
         }
         goalItemViewModel.getGoalItems(goal.goalId!!)
-        goalItemViewModel.getInitialStateGoalItem(goal.goalId)
     }
 
     val scope = rememberCoroutineScope()
@@ -106,6 +105,8 @@ fun GoalDetailScreen(
     val topBarTitle = remember {
         mutableStateOf(goal.goalTitle)
     }
+
+    goalItemViewModel.getInitialStateGoalItem(goal.goalId!!)
 
     fun updateGoalItem(isAchieved: Boolean) {
         if (state.initialStateGoalItem.isNotEmpty()) {
@@ -265,6 +266,6 @@ fun GoalDetailScreen(
             ) {
                 GoalItemsList(goalItems = state.goalItems)
             }
-        },
+        }
     )
 }
