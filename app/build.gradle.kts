@@ -4,6 +4,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     id("kotlin-parcelize")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -51,6 +52,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+composeCompiler {
+    enableStrongSkippingMode = true
+
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 dependencies {
